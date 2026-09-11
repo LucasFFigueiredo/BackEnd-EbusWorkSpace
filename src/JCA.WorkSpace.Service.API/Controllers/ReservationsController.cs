@@ -11,7 +11,7 @@ namespace JCA.WorkSpace.Service.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-// [Authorize]
+[Authorize]
 public class ReservationsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -25,7 +25,7 @@ public class ReservationsController : ControllerBase
     /// Cria uma nova reserva de mesa ou sala.
     /// </summary>
     [HttpPost]
-    // [Authorize]
+    [Authorize]
     public async Task<IActionResult> CreateReservation([FromBody] CreateReservationCommand command)
     {
         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) ??
@@ -56,7 +56,7 @@ public class ReservationsController : ControllerBase
     /// Realiza o check-in através da leitura do QR Code do Espaço.
     /// </summary>
     [HttpPost("scan-checkin")]
-    // [Authorize]
+    [Authorize]
     public async Task<IActionResult> ScanCheckIn([FromBody] CheckInCommand command)
     {
         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) ??
@@ -145,7 +145,7 @@ public class ReservationsController : ControllerBase
     /// Retorna os detalhes de uma reserva específica.
     /// </summary>
     [HttpGet("{id}")]
-    // [Authorize]
+    [Authorize]
     public async Task<IActionResult> GetReservationById(Guid id)
     {
         var query = new GetReservationByIdQuery { Id = id };
@@ -161,7 +161,7 @@ public class ReservationsController : ControllerBase
     /// Cria reservas em lote com algoritmo de resolução de conflitos parciais.
     /// </summary>
     [HttpPost("batch")]
-    // [Authorize]
+    [Authorize]
     public async Task<IActionResult> CreateBatchReservation([FromBody] CreateBatchReservationCommand command)
     {
         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) ??
@@ -203,7 +203,7 @@ public class ReservationsController : ControllerBase
     /// Aprova ou nega uma reserva que exige aprovação prévia.
     /// </summary>
     [HttpPatch("{id}/approval")]
-    // [Authorize(Roles = "Admin,Manager,Facilities")]
+    [Authorize(Roles = "Admin,Facilities")]
     public async Task<IActionResult> ApproveReservation(Guid id, [FromBody] ApproveReservationCommand command)
     {
         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) ??
@@ -228,7 +228,7 @@ public class ReservationsController : ControllerBase
     /// Ex: /api/reservations?status=AwaitingApproval
     /// </summary>
     [HttpGet]
-    // [Authorize(Roles = "Admin,Manager,Facilities")]
+    [Authorize(Roles = "Admin,Facilities")]
     public async Task<IActionResult> GetAll([FromQuery] string? status)
     {
         var query = new GetAllReservationsQuery { Status = status };
@@ -256,7 +256,7 @@ public class ReservationsController : ControllerBase
     /// Facilities aprova a extensão de tempo da sala.
     /// </summary>
     [HttpPatch("extension/approve")]
-    // [Authorize(Roles = "Facilities,Admin")]
+    [Authorize(Roles = "Admin,Facilities")]
     public async Task<IActionResult> ApproveExtension([FromBody] ApproveExtensionCommand command)
     {
         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) ??
@@ -272,7 +272,7 @@ public class ReservationsController : ControllerBase
     /// Lista todas as solicitações de extensão de tempo pendentes (Visão Facilities).
     /// </summary>
     [HttpGet("extension/requests")]
-    // [Authorize(Roles = "Facilities,Admin")]
+    [Authorize(Roles = "Admin,Facilities")]
     public async Task<IActionResult> GetExtensionRequests()
     {
         var query = new GetExtensionRequestsQuery();
@@ -282,10 +282,10 @@ public class ReservationsController : ControllerBase
     }
 
     /// <summary>
-    /// Lista as reservas ativas futuras (Usado pela tela de Gestão de Espaços / Facilities).
+    /// Lista as reservas futuras.
     /// </summary>
     [HttpGet("upcoming")]
-    // [Authorize(Roles = "Facilities,Admin")]
+    [Authorize(Roles = "Facilities,Admin")]
     public async Task<IActionResult> GetUpcomingReservations([FromQuery] bool onlyRooms = true)
     {
         var query = new GetUpcomingReservationsQuery

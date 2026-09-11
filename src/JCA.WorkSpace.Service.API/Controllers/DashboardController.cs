@@ -6,7 +6,7 @@ namespace JCA.WorkSpace.Service.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-// [Authorize(Roles = "Gestor, Admin")]
+[Authorize(Roles = "Manager, Admin")]
 public class DashboardController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -31,7 +31,7 @@ public class DashboardController : ControllerBase
     /// Retorna as métricas e agregações gerais para o Dashboard.
     /// </summary>
     [HttpGet("general")]
-    // [Authorize(Roles = "Admin,Manager,Facilities")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> GetGeneralMetrics([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
     {
         var start = startDate ?? DateTime.UtcNow.AddDays(-30);
@@ -47,7 +47,7 @@ public class DashboardController : ControllerBase
     /// Retorna as métricas individuais de um colaborador específico (Visão Gestor/Admin).
     /// </summary>
     [HttpGet("user/{userId}")]
-    // [Authorize(Roles = "Admin,Manager,Facilities")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> GetUserMetrics(Guid userId, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
     {
         var start = startDate ?? DateTime.UtcNow.AddDays(-30);
@@ -62,8 +62,9 @@ public class DashboardController : ControllerBase
     /// <summary>
     /// Retorna as métricas individuais do próprio usuário logado.
     /// </summary>
+    [Obsolete("O endpoint /api/dashboard/me não é exibido no front (ainda)")]
     [HttpGet("me")]
-    // [Authorize]
+    [Authorize]
     public async Task<IActionResult> GetMyMetrics([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
     {
 

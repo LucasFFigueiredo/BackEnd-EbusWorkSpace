@@ -40,7 +40,7 @@ public class UsersController : ControllerBase
     /// Altera o perfil de um usuário (Apenas Admin).
     /// </summary>
     [HttpPut("{id}/role")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateRole(Guid id, [FromBody] UpdateUserRoleCommand command)
     {
         var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
@@ -57,7 +57,7 @@ public class UsersController : ControllerBase
     /// Envia uma solicitação por e-mail pedindo um novo nível de acesso.
     /// </summary>
     [HttpPost("request-access")]
-    //[Authorize]
+    [Authorize]
     public async Task<IActionResult> RequestAccess([FromBody] RequestAccessCommand command)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
@@ -73,7 +73,7 @@ public class UsersController : ControllerBase
     /// Atualiza o setor/departamento do usuário logado (usado no Onboarding).
     /// </summary>
     [HttpPatch("sector")]
-    //[Authorize]
+    [Authorize]
     public async Task<IActionResult> UpdateSector([FromBody] UpdateUserSectorCommand command)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
@@ -89,7 +89,7 @@ public class UsersController : ControllerBase
     /// Retorna a lista de todos os usuários do sistema.
     /// </summary>
     [HttpGet]
-    // [Authorize(Roles = "Admin,Gestor")]
+    [Authorize(Roles = "Admin, Manager")]
     public async Task<IActionResult> GetAllUsers()
     {
         var query = new GetUsersQuery();
@@ -101,7 +101,7 @@ public class UsersController : ControllerBase
     /// Lista os colaboradores que solicitaram elevação de acesso.
     /// </summary>
     [HttpGet("requests")]
-    // [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAccessRequests()
     {
         var query = new GetAccessRequestsQuery();

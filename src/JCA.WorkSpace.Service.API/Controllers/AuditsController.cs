@@ -6,7 +6,7 @@ namespace JCA.WorkSpace.Service.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-// [Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin")]
 public class AuditsController : ControllerBase
 {
     private readonly IMediator _mediator;

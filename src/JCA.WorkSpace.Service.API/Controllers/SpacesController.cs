@@ -9,7 +9,7 @@ namespace JCA.WorkSpace.Service.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-// [Authorize]
+[Authorize]
 public class SpacesController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -23,7 +23,7 @@ public class SpacesController : ControllerBase
     /// <summary>
     /// Cadastra um novo espaço físico (Mesa ou Sala).
     /// </summary>
-    // [Authorize(Roles = "Facilities, Admin")]
+    [Authorize(Roles = "Facilities, Admin")]
     [HttpPost]
     public async Task<IActionResult> CreateSpace([FromBody] CreateSpaceCommand command)
     {
@@ -63,7 +63,7 @@ public class SpacesController : ControllerBase
     /// Retorna todos os espaços cadastrados no sistema (genérico).
     /// </summary>
     [HttpGet]
-    // [Authorize]
+    [Authorize]
     public async Task<IActionResult> GetAllSpaces()
     {
         var query = new GetAllSpacesQuery();
@@ -75,7 +75,7 @@ public class SpacesController : ControllerBase
     /// Retorna apenas os espaços que estão bloqueados / em manutenção.
     /// </summary>
     [HttpGet("maintenance")]
-    // [Authorize(Roles = "Admin,Facilities,Manager")]
+    [Authorize(Roles = "Admin,Facilities")]
     public async Task<IActionResult> GetSpacesInMaintenance()
     {
         var query = new GetSpacesInMaintenanceQuery();
@@ -87,13 +87,12 @@ public class SpacesController : ControllerBase
     /// Bloqueia ou desbloqueia um espaço (manutenção).
     /// </summary>
     [HttpPatch("{id}/maintenance")]
-    // [Authorize(Roles = "Admin,Facilities")]
+    [Authorize(Roles = "Admin,Facilities")]
     public async Task<IActionResult> SetMaintenance(Guid id, [FromBody] SetSpaceMaintenanceCommand command)
     {
         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) ??
                           User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
 
-        // Se o claim existir (produção com JWT), sobrescreve o UserId do body
         if (userIdClaim != null)
             command.UserId = Guid.Parse(userIdClaim.Value);
         else if (command.UserId == Guid.Empty)
@@ -109,7 +108,7 @@ public class SpacesController : ControllerBase
     /// Edita as características de um espaço existente.
     /// </summary>
     [HttpPut("{id}")]
-    // [Authorize(Roles = "Admin,Facilities")]
+    [Authorize(Roles = "Admin,Facilities")]
     public async Task<IActionResult> UpdateSpace(Guid id, [FromBody] UpdateSpaceCommand command)
     {
         command.Id = id;
@@ -126,7 +125,7 @@ public class SpacesController : ControllerBase
     /// Cria múltiplos espaços (Salas ou Mesas) de uma só vez em lote.
     /// </summary>
     [HttpPost("batch")]
-    // [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateBatch([FromBody] IEnumerable<SpaceBatchItem> items)
     {
         var command = new CreateBatchSpaceCommand { Spaces = items };
