@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/JCA.WorkSpace.Application/JCA.WorkSpace.Application.csproj" />
+    <Project Path="src/JCA.WorkSpace.Domain/JCA.WorkSpace.Domain.csproj" />
+    <Project Path="src/JCA.WorkSpace.Infrastructure.CrossCutting.IoC/JCA.WorkSpace.Infrastructure.CrossCutting.IoC.csproj" />
+    <Project Path="src/JCA.WorkSpace.Infrastructure.Data/JCA.WorkSpace.Infrastructure.Data.csproj" />
+    <Project Path="src/JCA.WorkSpace.Service.API/JCA.WorkSpace.Service.API.csproj" />
+  </Folder>
+  <Project Path="tests/JCA.WorkSpace.Application.Tests/JCA.WorkSpace.Application.Tests.csproj" />
+  <Project Path="tests/JCA.WorkSpace.Service.API.Tests/JCA.WorkSpace.Service.API.Tests.csproj" />
+</Solution>

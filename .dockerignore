@@ -1,0 +1,45 @@
+
+# Controle de versão e configuração local
+.git
+.gitignore
+.gitattributes
+.env
+.env.*
+!.env.example
+
+# Builds e dependências .NET
+bin/
+obj/
+out/
+TestResults/
+packages/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# IDEs e ferramentas
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Documentação e arquivos temporários
+*.log
+*.tmp
+*.temp
+*.bak
+*.cache
+README.md
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.docker/
+    
