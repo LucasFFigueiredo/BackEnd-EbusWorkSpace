@@ -226,10 +226,9 @@ public class ReservationsController : ControllerBase
 
     /// <summary>
     /// Lista todas as reservas. Pode ser filtrado por status.
-    /// Ex: /api/reservations?status=AwaitingApproval
     /// </summary>
     [HttpGet]
-    [Authorize(Roles = "Admin,Facilities")]
+    [Authorize]
     public async Task<IActionResult> GetAll([FromQuery] string? status)
     {
         var query = new GetAllReservationsQuery { Status = status };
@@ -286,7 +285,7 @@ public class ReservationsController : ControllerBase
     /// Lista as reservas futuras.
     /// </summary>
     [HttpGet("upcoming")]
-    [Authorize(Roles = "Facilities,Admin")]
+    [Authorize]
     public async Task<IActionResult> GetUpcomingReservations([FromQuery] bool onlyRooms = true)
     {
         var query = new GetUpcomingReservationsQuery
