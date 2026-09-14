@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace JCA.WorkSpace.Service.API.Controllers;
@@ -25,7 +26,6 @@ public class ReservationsController : ControllerBase
     /// Cria uma nova reserva de mesa ou sala.
     /// </summary>
     [HttpPost]
-    [Authorize]
     public async Task<IActionResult> CreateReservation([FromBody] CreateReservationCommand command)
     {
         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) ??
@@ -56,7 +56,6 @@ public class ReservationsController : ControllerBase
     /// Realiza o check-in através da leitura do QR Code do Espaço.
     /// </summary>
     [HttpPost("scan-checkin")]
-    [Authorize]
     public async Task<IActionResult> ScanCheckIn([FromBody] CheckInCommand command)
     {
         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) ??
@@ -106,7 +105,7 @@ public class ReservationsController : ControllerBase
             return BadRequest(new { error = ex.Message });
         }
     }
-    
+
 
     /// <summary>
     /// Cancela um lote inteiro de reservas recorrentes.
@@ -117,12 +116,16 @@ public class ReservationsController : ControllerBase
         if (batchId != command.BatchId)
             return BadRequest("O ID do lote na rota difere do ID do corpo da requisição.");
 
-        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) ??
-                          User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub);
 
-        if (userIdClaim != null)
+        if (!string.IsNullOrEmpty(userIdString))
         {
-            command.UserId = Guid.Parse(userIdClaim.Value);
+            command.UserId = Guid.Parse(userIdString);
+            command.UserRole = User.FindFirstValue(ClaimTypes.Role) ?? User.FindFirstValue("role");
+        }
+        else if (command.UserId == Guid.Empty)
+        {
+            return Unauthorized("Usuário não autenticado no Token.");
         }
 
         await _mediator.Send(command);
@@ -145,7 +148,6 @@ public class ReservationsController : ControllerBase
     /// Retorna os detalhes de uma reserva específica.
     /// </summary>
     [HttpGet("{id}")]
-    [Authorize]
     public async Task<IActionResult> GetReservationById(Guid id)
     {
         var query = new GetReservationByIdQuery { Id = id };
@@ -161,7 +163,6 @@ public class ReservationsController : ControllerBase
     /// Cria reservas em lote com algoritmo de resolução de conflitos parciais.
     /// </summary>
     [HttpPost("batch")]
-    [Authorize]
     public async Task<IActionResult> CreateBatchReservation([FromBody] CreateBatchReservationCommand command)
     {
         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) ??

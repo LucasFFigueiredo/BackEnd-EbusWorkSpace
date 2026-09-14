@@ -6,16 +6,21 @@ using JCA.WorkSpace.Domain.Enums;
 using JCA.WorkSpace.Service.API.Tests.Config;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace JCA.WorkSpace.Service.API.Tests;
 
 public class DashboardControllerIntegrationTests : IClassFixture<WorkSpaceApiFactory>
 {
     private readonly HttpClient _client;
+    private readonly IConfiguration _config;
 
     public DashboardControllerIntegrationTests(WorkSpaceApiFactory factory)
     {
         _client = factory.CreateClient();
+        _config = factory.Services.GetRequiredService<IConfiguration>();
+        TestAuthHelper.AuthenticateClient(_client, _config);
     }
 
     private async Task<Guid> CreateUserWithSectorAsync(string sector)

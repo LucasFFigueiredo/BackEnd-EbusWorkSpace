@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using JCA.WorkSpace.Application.Queries.AuditLogs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace JCA.WorkSpace.Service.API.Controllers;
 

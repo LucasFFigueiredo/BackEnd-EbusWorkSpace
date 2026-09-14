@@ -7,5 +7,4 @@
     <Project Path="src/JCA.WorkSpace.Service.API/JCA.WorkSpace.Service.API.csproj" />
   </Folder>
   <Project Path="tests/JCA.WorkSpace.Application.Tests/JCA.WorkSpace.Application.Tests.csproj" />
-  <Project Path="tests/JCA.WorkSpace.Service.API.Tests/JCA.WorkSpace.Service.API.Tests.csproj" />
 </Solution>

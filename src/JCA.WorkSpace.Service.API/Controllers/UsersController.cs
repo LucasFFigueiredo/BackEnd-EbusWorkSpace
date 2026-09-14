@@ -10,6 +10,7 @@ namespace JCA.WorkSpace.Service.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -23,6 +24,7 @@ public class UsersController : ControllerBase
     /// Cadastra um novo usuário no sistema.
     /// </summary>
     [HttpPost]
+    [AllowAnonymous]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserCommand command)
     {
         try
@@ -57,7 +59,6 @@ public class UsersController : ControllerBase
     /// Envia uma solicitação por e-mail pedindo um novo nível de acesso.
     /// </summary>
     [HttpPost("request-access")]
-    [Authorize]
     public async Task<IActionResult> RequestAccess([FromBody] RequestAccessCommand command)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
@@ -73,7 +74,6 @@ public class UsersController : ControllerBase
     /// Atualiza o setor/departamento do usuário logado (usado no Onboarding).
     /// </summary>
     [HttpPatch("sector")]
-    [Authorize]
     public async Task<IActionResult> UpdateSector([FromBody] UpdateUserSectorCommand command)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);

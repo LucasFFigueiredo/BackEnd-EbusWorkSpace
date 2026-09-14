@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using JCA.WorkSpace.Application.Queries.Dashboards;
+using Microsoft.AspNetCore.Authorization;
 
 namespace JCA.WorkSpace.Service.API.Controllers;
 
@@ -31,7 +32,6 @@ public class DashboardController : ControllerBase
     /// Retorna as métricas e agregações gerais para o Dashboard.
     /// </summary>
     [HttpGet("general")]
-    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> GetGeneralMetrics([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
     {
         var start = startDate ?? DateTime.UtcNow.AddDays(-30);
@@ -47,7 +47,6 @@ public class DashboardController : ControllerBase
     /// Retorna as métricas individuais de um colaborador específico (Visão Gestor/Admin).
     /// </summary>
     [HttpGet("user/{userId}")]
-    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> GetUserMetrics(Guid userId, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
     {
         var start = startDate ?? DateTime.UtcNow.AddDays(-30);
@@ -64,7 +63,6 @@ public class DashboardController : ControllerBase
     /// </summary>
     [Obsolete("O endpoint /api/dashboard/me não é exibido no front (ainda)")]
     [HttpGet("me")]
-    [Authorize]
     public async Task<IActionResult> GetMyMetrics([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
     {
 

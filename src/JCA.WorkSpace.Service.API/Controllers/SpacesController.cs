@@ -13,7 +13,6 @@ namespace JCA.WorkSpace.Service.API.Controllers;
 public class SpacesController : ControllerBase
 {
     private readonly IMediator _mediator;
-    public record SetResourceBlockDto(bool Blocked, string? Reason, DateTime? BlockedFrom, DateTime? BlockedTo);
 
     public SpacesController(IMediator mediator)
     {
@@ -63,7 +62,6 @@ public class SpacesController : ControllerBase
     /// Retorna todos os espaços cadastrados no sistema (genérico).
     /// </summary>
     [HttpGet]
-    [Authorize]
     public async Task<IActionResult> GetAllSpaces()
     {
         var query = new GetAllSpacesQuery();
