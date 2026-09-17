@@ -134,6 +134,8 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/api/health");
 
+app.MapGet("/", () => "WorkSpace API is online!");
+
 app.Run();
 
 public partial class Program { }
