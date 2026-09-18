@@ -52,7 +52,7 @@ public class GetDashboardMetricsQueryHandlerTests
         result.Totals.CheckIns.Should().Be(expectedCheckIns);
         result.Totals.BlockedSpaces.Should().Be(expectedBlocked);
 
-        result.Totals.ActiveReservations.Should().Be(2);
+        result.Totals.ActiveReservations.Should().Be(expectedActive);
 
         result.ByDepartment.Should().NotBeEmpty();
         var engenharia = result.ByDepartment.FirstOrDefault(d => d.Name == "Engenharia");

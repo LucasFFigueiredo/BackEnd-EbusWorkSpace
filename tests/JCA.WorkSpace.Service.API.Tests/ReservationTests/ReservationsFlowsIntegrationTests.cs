@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using JCA.WorkSpace.Application.Commands.Reservations;
 using JCA.WorkSpace.Application.Commands.Users;
 using JCA.WorkSpace.Application.Dtos.Reservations;

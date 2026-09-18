@@ -1,4 +1,5 @@
 using JCA.WorkSpace.Infrastructure.Data.Contexts;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -32,6 +33,16 @@ public class WorkSpaceApiFactory : WebApplicationFactory<Program>, IAsyncLifetim
 
             services.AddDbContext<WorkSpaceContextRead>(options =>
                 options.UseNpgsql(connectionString));
+
+            // Substitui o esquema de autenticação JWT por um handler de teste que
+            // autentica automaticamente todas as requisições, extraindo o userId do body quando disponível.
+            // Isso resolve os 401 sem alterar as classes de teste.
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "TestAuth";
+                options.DefaultChallengeScheme = "TestAuth";
+            })
+            .AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>("TestAuth", _ => { });
         });
     }
 
