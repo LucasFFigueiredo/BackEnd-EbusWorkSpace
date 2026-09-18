@@ -28,10 +28,8 @@ public class TestJwtDelegatingHandler : DelegatingHandler
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        // Tenta extrair userId do body JSON para gerar token com o ID correto
         var userId = await TryExtractUserIdFromBodyAsync(request);
 
-        // Gera e injeta o token JWT
         var token = GenerateJwt(userId ?? DefaultAdminId);
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -44,14 +42,12 @@ public class TestJwtDelegatingHandler : DelegatingHandler
 
         try
         {
-            // Lê o body sem consumir o stream original
             var bodyBytes = await request.Content.ReadAsByteArrayAsync();
             if (bodyBytes.Length == 0) return null;
 
             using var doc = JsonDocument.Parse(bodyBytes);
             var root = doc.RootElement;
 
-            // Tenta encontrar userId em diferentes formatos de casing
             foreach (var propertyName in new[] { "userId", "UserId" })
             {
                 if (root.TryGetProperty(propertyName, out var userIdElement) &&
@@ -59,20 +55,17 @@ public class TestJwtDelegatingHandler : DelegatingHandler
                     Guid.TryParse(userIdElement.GetString(), out var parsedId) &&
                     parsedId != Guid.Empty)
                 {
-                    // Recoloca o body na requisição para que o controller possa lê-lo novamente
                     request.Content = new ByteArrayContent(bodyBytes);
                     request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
                     return parsedId;
                 }
             }
 
-            // Recoloca o body mesmo se não encontrou userId
             request.Content = new ByteArrayContent(bodyBytes);
             request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
         }
         catch
         {
-            // Ignora erros ao parsear (body não é JSON, etc.)
         }
 
         return null;

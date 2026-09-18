@@ -56,7 +56,6 @@ public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSch
 
     private async Task<Guid> ExtractUserIdAsync()
     {
-        // Tenta extrair userId do body JSON (para manter o comportamento dos testes que passam userId no body)
         if (Request.ContentLength > 0 && Request.Body.CanRead)
         {
             try
@@ -84,7 +83,6 @@ public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSch
             }
             catch
             {
-                // Ignora erros de parsing
             }
         }
 

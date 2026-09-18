@@ -34,9 +34,6 @@ public class WorkSpaceApiFactory : WebApplicationFactory<Program>, IAsyncLifetim
             services.AddDbContext<WorkSpaceContextRead>(options =>
                 options.UseNpgsql(connectionString));
 
-            // Substitui o esquema de autenticação JWT por um handler de teste que
-            // autentica automaticamente todas as requisições, extraindo o userId do body quando disponível.
-            // Isso resolve os 401 sem alterar as classes de teste.
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = "TestAuth";
