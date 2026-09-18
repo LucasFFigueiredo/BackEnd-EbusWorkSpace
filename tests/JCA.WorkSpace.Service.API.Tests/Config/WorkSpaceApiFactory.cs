@@ -1,4 +1,5 @@
 using JCA.WorkSpace.Infrastructure.Data.Contexts;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -32,6 +33,13 @@ public class WorkSpaceApiFactory : WebApplicationFactory<Program>, IAsyncLifetim
 
             services.AddDbContext<WorkSpaceContextRead>(options =>
                 options.UseNpgsql(connectionString));
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "TestAuth";
+                options.DefaultChallengeScheme = "TestAuth";
+            })
+            .AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>("TestAuth", _ => { });
         });
     }
 
