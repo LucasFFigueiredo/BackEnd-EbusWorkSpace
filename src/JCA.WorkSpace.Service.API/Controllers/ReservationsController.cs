@@ -255,17 +255,31 @@ public class ReservationsController : ControllerBase
     /// <summary>
     /// Facilities aprova a extensão de tempo da sala.
     /// </summary>
-    [HttpPatch("extension/approve")]
+    [HttpPatch("extension/{id}/approve")]
     [Authorize(Roles = "Admin,Facilities")]
-    public async Task<IActionResult> ApproveExtension([FromBody] ApproveExtensionCommand command)
+    public async Task<IActionResult> ApproveExtension(Guid id)
     {
+        var command = new ApproveExtensionCommand { ExtensionRequestId = id };
         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) ??
                           User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
 
         if (userIdClaim != null) command.ApproverId = Guid.Parse(userIdClaim.Value);
 
         await _mediator.Send(command);
-        return Ok(new { Message = "Tempo estendido com sucesso." });
+        return Ok(new { success = true });
+    }
+
+    /// <summary>
+    /// Facilities rejeita a extensão de tempo da sala.
+    /// </summary>
+    [HttpPatch("extension/{id}/reject")]
+    [Authorize(Roles = "Admin,Facilities")]
+    public async Task<IActionResult> RejectExtension(Guid id)
+    {
+        var command = new RejectExtensionCommand { ExtensionRequestId = id };
+        
+        await _mediator.Send(command);
+        return Ok(new { success = true });
     }
 
     /// <summary>

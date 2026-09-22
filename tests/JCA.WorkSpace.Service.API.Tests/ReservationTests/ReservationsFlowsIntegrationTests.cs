@@ -115,14 +115,9 @@ public class ReservationsFlowsIntegrationTests : IClassFixture<WorkSpaceApiFacto
         requestsList.Should().Contain(r => r.ReservationId == reservationId && r.RequestedMinutes == 60);
 
 
-        var approveCommand = new ApproveExtensionCommand
-        {
-            ApproverId = facilitiesId,
-            ReservationId = reservationId,
-            AdditionalMinutes = 60,
-            IsApproved = true
-        };
-        var approveRes = await _client.PatchAsJsonAsync("/api/Reservations/extension/approve", approveCommand);
+        var request = requestsList.First(r => r.ReservationId == reservationId);
+
+        var approveRes = await _client.PatchAsync($"/api/Reservations/extension/{request.Id}/approve", null);
         approveRes.StatusCode.Should().Be(HttpStatusCode.OK);
 
 

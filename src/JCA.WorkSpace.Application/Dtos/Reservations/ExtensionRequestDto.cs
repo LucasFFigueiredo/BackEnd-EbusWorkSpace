@@ -1,7 +1,8 @@
-﻿namespace JCA.WorkSpace.Application.Dtos.Reservations;
+namespace JCA.WorkSpace.Application.Dtos.Reservations;
 
 public class ExtensionRequestDto
 {
+    public Guid Id { get; set; }
     public Guid ReservationId { get; set; }
     public string UserName { get; set; } = string.Empty;
     public string SpaceName { get; set; } = string.Empty;
