@@ -49,6 +49,18 @@ public class LoginGoogleCommandHandler : IRequestHandler<LoginGoogleCommand, Aut
             throw new UnauthorizedAccessException("Token do Google inválido ou expirado.");
         }
 
+        var allowedDomains = _configuration.GetSection("GoogleAuth:AllowedDomains")
+            .GetChildren()
+            .Select(x => x.Value!)
+            .ToArray();
+        bool isDomainAllowed = allowedDomains.Contains(payload.HostedDomain) ||
+                               allowedDomains.Any(domain => payload.Email.EndsWith($"@{domain}", StringComparison.OrdinalIgnoreCase));
+
+        if (!isDomainAllowed)
+        {
+            throw new UnauthorizedAccessException("Acesso negado. Utilize um e-mail corporativo autorizado para acessar o Workspace.");
+        }
+
         var user = await _userRepository.GetByEmailAsync(payload.Email);
         if (user == null)
         {
