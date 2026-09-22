@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using JCA.WorkSpace.Domain.Interfaces.Repositories;
 using JCA.WorkSpace.Infrastructure.Data.Repositories;
@@ -23,6 +23,8 @@ public static class DependencyInjection
         services.AddScoped<ISpaceRepository, SpaceRepository>();
         services.AddScoped<IReservationRepository, ReservationRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+        services.AddScoped<IAccessRequestRepository, AccessRequestRepository>();
+        services.AddScoped<IExtensionRequestRepository, ExtensionRequestRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 

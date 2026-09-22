@@ -12,6 +12,8 @@ public class WorkSpaceContext : DbContext
     public DbSet<Space> Spaces { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
+    public DbSet<AccessRequest> AccessRequests { get; set; }
+    public DbSet<ExtensionRequest> ExtensionRequests { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,6 +23,8 @@ public class WorkSpaceContext : DbContext
         modelBuilder.HasPostgresEnum<UserProfile>();
         modelBuilder.HasPostgresEnum<SpaceType>();
         modelBuilder.HasPostgresEnum<ReservationStatus>();
+        modelBuilder.HasPostgresEnum<AccessRequestStatus>();
+        modelBuilder.HasPostgresEnum<ExtensionRequestStatus>();
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(WorkSpaceContext).Assembly);
         modelBuilder.SeedData();
 
@@ -188,6 +192,81 @@ public class WorkSpaceContext : DbContext
 
             entity.HasIndex(a => a.Action)
                   .HasDatabaseName("idx_auditlogs_action");
+        });
+
+        modelBuilder.Entity<AccessRequest>(entity =>
+        {
+            entity.ToTable("AccessRequests");
+
+            entity.HasKey(a => a.Id);
+
+            entity.Property(a => a.Id)
+                  .HasDefaultValueSql("gen_random_uuid()");
+
+            entity.Property(a => a.RequestedProfile)
+                  .IsRequired();
+
+            entity.Property(a => a.Status)
+                  .IsRequired();
+
+            entity.Property(a => a.CreatedAt)
+                  .HasDefaultValueSql("NOW()");
+
+            entity.Property(a => a.UpdatedAt)
+                  .IsRequired(false);
+
+            entity.HasOne(a => a.User)
+                  .WithMany()
+                  .HasForeignKey(a => a.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(a => a.UserId)
+                  .HasDatabaseName("idx_accessrequests_userid");
+
+            entity.HasIndex(a => a.Status)
+                  .HasDatabaseName("idx_accessrequests_status");
+        });
+
+        modelBuilder.Entity<ExtensionRequest>(entity =>
+        {
+            entity.ToTable("ExtensionRequests");
+
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id)
+                  .HasDefaultValueSql("gen_random_uuid()");
+
+            entity.Property(e => e.RequestedMinutes)
+                  .IsRequired();
+
+            entity.Property(e => e.Status)
+                  .IsRequired();
+
+            entity.Property(e => e.Justification)
+                  .HasMaxLength(500)
+                  .IsRequired(false);
+
+            entity.Property(e => e.CreatedAt)
+                  .HasDefaultValueSql("NOW()");
+
+            entity.Property(e => e.UpdatedAt)
+                  .IsRequired(false);
+
+            entity.HasOne(e => e.Reservation)
+                  .WithMany()
+                  .HasForeignKey(e => e.ReservationId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.User)
+                  .WithMany()
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.ReservationId)
+                  .HasDatabaseName("idx_extensionrequests_reservationid");
+                  
+            entity.HasIndex(e => e.Status)
+                  .HasDatabaseName("idx_extensionrequests_status");
         });
     }
 }

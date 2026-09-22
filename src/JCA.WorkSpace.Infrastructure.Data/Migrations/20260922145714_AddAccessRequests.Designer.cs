@@ -3,6 +3,7 @@ using System;
 using JCA.WorkSpace.Infrastructure.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JCA.WorkSpace.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(WorkSpaceContext))]
-    partial class WorkSpaceContextModelSnapshot : ModelSnapshot
+    [Migration("20260922145714_AddAccessRequests")]
+    partial class AddAccessRequests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,7 +24,6 @@ namespace JCA.WorkSpace.Infrastructure.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "access_request_status", new[] { "pending", "approved", "rejected" });
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "extension_request_status", new[] { "pending", "approved", "rejected" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "reservation_status", new[] { "pending", "checked_in", "canceled", "no_show", "completed", "awaiting_approval" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "space_type", new[] { "desk", "room" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "user_profile", new[] { "employee", "manager", "facilities", "admin" });
@@ -99,50 +101,6 @@ namespace JCA.WorkSpace.Infrastructure.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("AuditLogs", (string)null);
-                });
-
-            modelBuilder.Entity("JCA.WorkSpace.Domain.Entities.ExtensionRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("Justification")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<int>("RequestedMinutes")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ReservationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReservationId")
-                        .HasDatabaseName("idx_extensionrequests_reservationid");
-
-                    b.HasIndex("Status")
-                        .HasDatabaseName("idx_extensionrequests_status");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ExtensionRequests", (string)null);
                 });
 
             modelBuilder.Entity("JCA.WorkSpace.Domain.Entities.Reservation", b =>
@@ -1038,25 +996,6 @@ namespace JCA.WorkSpace.Infrastructure.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("JCA.WorkSpace.Domain.Entities.ExtensionRequest", b =>
-                {
-                    b.HasOne("JCA.WorkSpace.Domain.Entities.Reservation", "Reservation")
-                        .WithMany()
-                        .HasForeignKey("ReservationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("JCA.WorkSpace.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Reservation");
 
                     b.Navigation("User");
                 });

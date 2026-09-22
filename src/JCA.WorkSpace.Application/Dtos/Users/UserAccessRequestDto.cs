@@ -1,7 +1,8 @@
-﻿namespace JCA.WorkSpace.Application.Dtos.Users;
+namespace JCA.WorkSpace.Application.Dtos.Users;
 
 public class UserAccessRequestDto
 {
+    public Guid RequestId { get; set; }
     public Guid UserId { get; set; }
     public string UserName { get; set; } = string.Empty;
     public string UserEmail { get; set; } = string.Empty;
