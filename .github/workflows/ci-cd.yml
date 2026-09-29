@@ -1,0 +1,119 @@
+name: BackEnd CI/CD Pipeline
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  test-backend:
+    name: Test Back-End
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      
+      - name: Restore & Test
+        run: |
+          dotnet restore
+          dotnet test --no-restore --verbosity normal
+
+  sast:
+    name: SAST
+    needs: [test-backend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run Semgrep SAST
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >- 
+            p/csharp
+            p/security-audit
+
+  secret-detection:
+      name: Secret Detection
+      needs: [test-backend]
+      runs-on: ubuntu-latest
+      permissions:
+        contents: read
+        pull-requests: read
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 0 
+            
+        - name: Run Gitleaks
+          uses: gitleaks/gitleaks-action@v2
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-backend:
+    name: Build Docker Image
+    needs: [sast, secret-detection]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build Docker Image
+        run: docker build -t workspace-api:latest .
+      
+      - name: Save Docker Image
+        run: docker save -o workspace-api.tar workspace-api:latest
+      
+      - name: Upload Artifact Imagem
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-workspace-api
+          path: workspace-api.tar
+          retention-days: 1
+
+  scan-backend:
+    name: Scan Container Image
+    needs: [build-backend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact Imagem
+        uses: actions/download-artifact@v4
+        with:
+          name: image-workspace-api
+      
+      - name: Load Docker Image 
+        run: docker load -i workspace-api.tar
+      
+      - name: Container Vulnerability Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "workspace-api:latest"
+          format: "table"
+          exit-code: "0"
+          severity: "CRITICAL,HIGH"
+
+  deploy:
+    name: Trigger Render Deploy
+    needs: [scan-backend]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main'
+    steps:
+      - name: Trigger Render Deploy
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK" ]; then
+            echo "Webhook URL não configurada. Configure o secret RENDER_DEPLOY_HOOK no GitHub."
+            exit 1
+          fi
+          curl -X POST -d "" "$RENDER_DEPLOY_HOOK"
