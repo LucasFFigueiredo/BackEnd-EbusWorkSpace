@@ -106,7 +106,7 @@ jobs:
     name: Trigger Render Deploy
     needs: [scan-backend]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     steps:
       - name: Trigger Render Deploy
         env:
